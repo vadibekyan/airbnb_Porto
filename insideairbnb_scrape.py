@@ -11,7 +11,7 @@ import shutil
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Define the base URL template
-BASE_URL = "https://data.insideairbnb.com/portugal/norte/porto/{date}/data/{table}"
+BASE_URL = "https://data.insideairbnb.com/portugal/norte/porto/{date}/{folder}/{table}"
 
 # Directory to save downloaded files
 SAVE_DIR = "porto_tables"
@@ -20,13 +20,13 @@ os.makedirs(SAVE_DIR, exist_ok=True)
 # Dates and tables to download
 DATES = ['2024-06-17', '2024-03-18', '2023-12-17', '2023-09-11']
 TABLES = {
-    'listings': 'listings.csv.gz', 
-    'reviews': 'reviews.csv.gz', 
-    'calendar': 'calendar.csv.gz',
-    'listings_summary': 'listings.csv',
-    'reviews_summary': 'reviews.csv',
-    'neighbourhoods': 'neighbourhoods.csv',
-    'neighbourhoods_geo': 'neighbourhoods.geojson',
+    'listings': ('listings.csv.gz', 'data'), 
+    'reviews': ('reviews.csv.gz', 'data'), 
+    'calendar': ('calendar.csv.gz', 'data'),
+    'listings_summary': ('listings.csv', 'visualisations'),
+    'reviews_summary': ('reviews.csv', 'visualisations'),
+    'neighbourhoods': ('neighbourhoods.csv', 'visualisations'),
+    'neighbourhoods_geo': ('neighbourhoods.geojson', 'visualisations'),
 }
 
 def download_file(url, save_path, retries=3):
@@ -54,8 +54,8 @@ def format_save_path(table_name, date, table):
 def download_all_files():
     """Main function to iterate over dates and tables, downloading each file."""
     for date in DATES:
-        for table_name, table in TABLES.items():
-            url = BASE_URL.format(date=date, table=table)
+        for table_name, (table, folder) in TABLES.items():
+            url = BASE_URL.format(date=date, folder = folder, table=table)
             save_path = format_save_path(table_name, date, table)
             download_file(url, save_path)
     
